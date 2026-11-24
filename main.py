@@ -33,6 +33,8 @@ def validate(word: str) -> None:
         raise SystemExit("word must contain a non-whitespace character")
     if len(word.split()) != 1:
         raise SystemExit(f"word must be exactly one word, got: {word!r}")
+    if not word.isalpha():
+        raise SystemExit(f"word must be letters only, got: {word!r}")
 
 
 def main() -> None:
@@ -42,6 +44,11 @@ def main() -> None:
     # Write exactly the word: no trailing newline, the judge reads
     # exactly the bytes in the file.
     output_path.write_text(WORD, encoding="utf-8")
+    # Read-back verification: the file on disk must contain exactly the
+    # word, byte for byte. Fail loudly instead of shipping a bad entry.
+    written = output_path.read_text(encoding="utf-8")
+    if written != WORD:
+        raise SystemExit(f"read-back mismatch: wrote {WORD!r}, file has {written!r}")
 
 
 if __name__ == "__main__":
